@@ -49,11 +49,16 @@
 <body>
   <form method="post" action="/submit">
     <label for="name">Rippedcept:</label>
-    <input type="text" name="link" placeholder="Link naar rippedcept">
-    <button type="submit">Submit</button>
-
-    <%- recipe %>
+    <input type="text" name="url" placeholder="Link naar rippedcept">
+    <button type="submit">Recept opslaan</button>
   </form>
+
+  <form method="post" action="/search">
+    <label for="name">Recept zoeken:</label>
+    <input type="text" name="keyword" placeholder="Zoek rippedcept">
+    <button type="submit">Recept zoeken</button>
+  </form>
+
 </body>
 
 </html>

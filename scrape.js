@@ -1,23 +1,23 @@
-import fs from 'fs';
-import * as cheerio from 'cheerio';
+import fs from "fs";
+import * as cheerio from "cheerio";
 
-async function scrapeWebsite(url) {
+async function scrapeWebsiteText(url) {
   const req = await fetch(url);
-  const html = await req.text();
-  return html;
+  const text = await req.text();
+  return text;
 }
 
 /**
  * For testing DOM selection, without network calls
  */
 function readHtmlAsTempCodingThing() {
-  const data = fs.readFileSync('./dom-snip-for-testing.html', 'utf-8');
+  const data = fs.readFileSync("./dom-snip-for-testing.html", "utf-8");
   return data;
 }
 
 export async function getHtmlAsCheerioFunction(url) {
   // Fetch from actual live website
-  const html = await scrapeWebsite(url);
+  const html = await scrapeWebsiteText(url);
 
   // Hard coded HTML snippet for debugging
   // const html = await readHtmlAsTempCodingThing();
@@ -25,4 +25,3 @@ export async function getHtmlAsCheerioFunction(url) {
   const $ = cheerio.load(html);
   return $;
 }
-
