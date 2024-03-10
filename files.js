@@ -1,61 +1,49 @@
-import fs from 'fs';
-import path from 'path';
+import fs from "fs";
+import path from "path";
+import { extractHTMLBodyAsText } from "./scrape.js";
 
-export const recipeDir = './recipes';
+export const recipeDir = "./recipes";
+
+export function getRecipeNameFromURL(link) {
+  const url = new URL(link);
+  const pathname = url.pathname;
+  // Split the pathname by '/' and filter out empty strings
+  const pathParts = pathname.split("/").filter((part) => part !== "");
+
+  // Get the last part
+  const recipeName = pathParts[pathParts.length - 1];
+
+  return recipeName;
+}
+
+export function readFilesAndMergeThem() {
+  const file1 = fs.readFileSync(
+    "./recipes/broodje-met-aioli-en-geroosterde-paprika.json",
+    "utf-8"
+  );
+
+  const file2 = fs.readFileSync(
+    "./recipes/chinese-kool-uit-de-oven.json",
+    "utf-8"
+  );
+
+  const json1 = JSON.parse(file1);
+  const json2 = JSON.parse(file2);
+
+  const ultimateJson = [json1, json2];
+  return ultimateJson;
+}
+
+export async function writeRecipeToFile(url) {
+  const recipeText = await extractHTMLBodyAsText(url);
+  console.dir({ recipeText }, { depth: null, colors: true });
+  const recipeName = getRecipeNameFromURL(url);
+  writeToFile(
+    JSON.stringify({ url, recipe: recipeText }),
+    recipeName + ".json"
+  );
+}
 
 export function writeToFile(recipe, fileName) {
-  fs.writeFileSync(`${recipeDir}/${fileName}`, recipe, 'utf-8')
-}
-
-export function getFileName() {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}.html`;
-}
-
-/**
- * @returns {boolean} - True if the content exists in any file, false otherwise
- */
-function contentExists(article) {
-  const bioboxes = fs.readdirSync(recipeDir);
-
-  for (const biobox of bioboxes) {
-    const filePath = path.join(recipeDir, biobox);
-
-    if (fs.statSync(filePath).isFile()) {
-      const existingContent = fs.readFileSync(filePath, 'utf8');
-
-      if (existingContent === article) {
-        console.log(`Content already exists in file ${filePath}. Skipping write.`);
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-/**
- * Write the file if no other file contains the same content
- */
-export function writeFile(article) {
-  if (!contentExists(article)) {
-    writeToFile(article, getFileName());
-    console.log(`Wrote file ${getFileName()}`);
-  }
-}
-
-export const getNavElement = () => {
-  const filesInBioboxes = fs.readdirSync(recipeDir);
-
-  let nav = '';
-  filesInBioboxes.forEach(file => {
-    const removeDotHtml = file.replace(/\.html$/, '');
-
-    nav += `<a href="/${file}">${removeDotHtml}</a> `;
-  })
-
-  return nav;
+  fs.writeFileSync(`${recipeDir}/${fileName}`, recipe, "utf-8");
 }
