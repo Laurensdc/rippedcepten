@@ -17,21 +17,16 @@ export function getRecipeNameFromURL(link) {
 }
 
 export function readFilesAndMergeThem() {
-  const file1 = fs.readFileSync(
-    "./recipes/broodje-met-aioli-en-geroosterde-paprika.json",
-    "utf-8"
-  );
+  const files = fs.readdirSync(recipeDir);
+  const jsonFiles = files.filter((file) => file.endsWith(".json"));
 
-  const file2 = fs.readFileSync(
-    "./recipes/chinese-kool-uit-de-oven.json",
-    "utf-8"
-  );
+  const jsons = jsonFiles.map((file) => {
+    const filePath = path.join(recipeDir, file);
+    const fileContents = fs.readFileSync(filePath, "utf-8");
+    return JSON.parse(fileContents);
+  });
 
-  const json1 = JSON.parse(file1);
-  const json2 = JSON.parse(file2);
-
-  const ultimateJson = [json1, json2];
-  return ultimateJson;
+  return jsons;
 }
 
 export async function writeRecipeToFile(url) {
