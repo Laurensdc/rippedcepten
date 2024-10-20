@@ -18,13 +18,24 @@ app.get("/", async (req, res) => {
 function fuzzySearch(json, searchTerm) {
   const fuse = new Fuse(json, {
     keys: ["url", "recipe"],
+
+    // Search the whole string, not just first 60 characters
+    // finding a match closer to the start of the string doesn't make it more relevant
     ignoreLocation: true,
+    // Short and long fields are treated equally
+    ignoreFieldNorm: true,
+
+    includeScore: true,
   });
 
   const result = fuse.search(searchTerm);
 
   return result;
 }
+
+app.get("/login", async (req, res) => {
+  res.render("./login");
+});
 
 app.post("/search", async (req, res) => {
   const searchTerm = req.body.keyword;

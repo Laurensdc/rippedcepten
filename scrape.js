@@ -10,7 +10,7 @@ async function scrapeWebsiteText(url) {
 export async function extractHTMLBodyAsText(url) {
   const $ = await getHtmlAsCheerioFunction(url);
   const recipeText = $("body").text();
-  const textWithoutATonOfWhitespace = recipeText.replace(/\s\s/g, "");
+  const textWithoutATonOfWhitespace = recipeText.replace(/\s/g, "");
   return textWithoutATonOfWhitespace;
 }
 
